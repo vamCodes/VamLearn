@@ -33,7 +33,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ pdfFile }) => {
     <Document file={pdfFile.url || pdfFile.file} options={options} onLoadSuccess={onDocumentLoadSuccess}>
         {Array.from({ length: numPages }, (_, index) => (
           <div key={index} className="mb-4">
-            <Page pageNumber={index + 1} width={300} />
+            <Page pageNumber={index + 1} width={400} />
           </div>
         ))}
       </Document>
