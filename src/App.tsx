@@ -1,39 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainLayout from './components/layout/Mainlayout';
+import ChatTab from './components/layout/ChatTab';
 import Home from './pages/Home';
-import type { PDF, TabType } from './types';
+import type { TabType, PDF } from './types';
 
-const seed: PDF[] = [
-  { id: 'ncert1', name: 'NCERT XI Physics Ch1', url:'/samples/ncert-xi-physics-ch1.pdf', type: 'sample', uploadDate: new Date('2023-01-01') },
-  { id: 'ncert2', name: 'NCERT XI Physics Ch2', url:'/samples/ncert-xi-physics-ch2.pdf', type: 'sample', uploadDate: new Date('2023-01-02') },
-];
+const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('quiz');
+  const [pdfs, setPdfs] = useState<PDF[]>([]);
+  const [selectedPdf, setSelectedPdf] = useState<PDF | null>(null);
 
-function App() {
-  const [activeTab,setActiveTab] = React.useState<TabType>('quiz');
-  const [pdfs,setPdfs] = React.useState<PDF[]>(seed);
-  const [selectedPdf,setSelectedPdf] = React.useState<PDF | null>(seed[0]);
+  const handleSelectPdf = (pdf: PDF) => setSelectedPdf(pdf);
 
-  const onUploadPdf = (file: File)=>{
-    const pdf: PDF = { id:`local-${Date.now()}`, name:file.name, url:URL.createObjectURL(file) };
-    setPdfs(prev=>[pdf,...prev]);
-    setSelectedPdf(pdf);
-  }
+const handleUploadPdf = (file: File) => {
+  const blobUrl = URL.createObjectURL(file);
+  const newPdf = { id: Date.now().toString(), name: file.name, url: blobUrl, file };
+  setPdfs(prev => [...prev, newPdf]);
+  setSelectedPdf(newPdf);
+};
 
-  const onLoadSamples = ()=>{ setPdfs(seed); setSelectedPdf(seed[0]); }
+  const loadSamples = () => {
+    const samples: PDF[] = [
+      { id: '1', name: 'NCERT Class XI Physics - Chapter 1', url: '/pdfs/Chapter1.pdf' },
+      { id: '2', name: 'NCERT Class XI Physics - Chapter 2', url: '/pdfs/Chapter2.pdf' },
+    ];
+    setPdfs(samples);
+  };
 
   return (
     <MainLayout
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
       pdfs={pdfs}
       selectedPdf={selectedPdf}
-      onSelectPdf={setSelectedPdf}
-      onUploadPdf={onUploadPdf}
-      onLoadSamples={onLoadSamples}
+      onSelectPdf={handleSelectPdf}
+      onUploadPdf={handleUploadPdf}
+      onLoadSamples={loadSamples}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
     >
-      <Home activeTab={activeTab} pdfs={pdfs} selectedPdf={selectedPdf} />
+      {activeTab === 'chat' && <ChatTab selectedPdf={selectedPdf} />}
+      {activeTab === 'quiz' && <Home activeTab="quiz" pdfs={pdfs} selectedPdf={selectedPdf} />}
     </MainLayout>
   );
-}
+};
 
 export default App;

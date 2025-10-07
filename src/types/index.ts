@@ -6,6 +6,7 @@ export interface PDF {
   id: string;
   name: string;
   url: string;
+  file? : File;
   type: 'uploaded' | 'sample';
   uploadDate: string;
   textContent?: PDFTextContent;

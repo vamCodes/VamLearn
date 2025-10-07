@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PDF, TabType } from '../../types';
 import Button from '../common/Button';
+import { X } from 'lucide-react'; // You can use this or just ✕
 
 interface SidebarProps {
   isOpen: boolean;
@@ -26,16 +27,27 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-   <aside
-  className={`
-    fixed z-20 top-0 left-0 h-full w-64 bg-white border-r border-gray-200
-    transform transition-transform duration-300 ease-in-out
-    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-  `}
->
+    <aside
+      className={`
+        fixed z-20 top-0 left-0 h-full w-64 bg-white border-r border-gray-200
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}
+    >
       <div className="flex flex-col h-full p-4">
-        <h1 className="text-xl font-bold mb-4">RevisionHub</h1>
+        {/* Header with title + close button */}
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-xl font-bold">RevisionHub</h1>
+          <button
+            onClick={onClose}
+            className="p-1 rounded hover:bg-gray-200 transition"
+            title="Close Sidebar"
+          >
+            <X className="w-5 h-5 text-gray-700"/>
+          </button>
+        </div>
         
+        {/* Tabs */}
         <div className="mb-6">
           {['quiz', 'chat', 'progress'].map(tab => (
             <button
@@ -48,7 +60,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
-        <div className="flex-1">
+        {/* PDF List */}
+        <div className="flex-1 mb-4">
           <h3 className="text-sm font-semibold mb-2">Your PDFs</h3>
           {pdfs.length===0 ? (
             <Button onClick={onLoadSamples} variant="primary">Load Sample PDFs</Button>
@@ -63,6 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </div>
 
+        {/* Upload PDF */}
         <input ref={fileInputRef} type="file" accept=".pdf" className="hidden" onChange={handleFileChange}/>
         <Button onClick={()=>fileInputRef.current?.click()} variant="primary">Upload PDF</Button>
       </div>
