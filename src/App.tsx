@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import MainLayout from './components/layout/Mainlayout';
 import ChatTab from './components/layout/ChatTab';
-import Home from './pages/Home';
+import QuizTab from './pages/QuizTab';
+import { usePdfExtractor } from './hooks/usePdfExtractor';
 import type { TabType, PDF } from './types';
 
 const App: React.FC = () => {
@@ -9,14 +10,16 @@ const App: React.FC = () => {
   const [pdfs, setPdfs] = useState<PDF[]>([]);
   const [selectedPdf, setSelectedPdf] = useState<PDF | null>(null);
 
+  const { text: extractedText, loading, error } = usePdfExtractor(selectedPdf);
+
   const handleSelectPdf = (pdf: PDF) => setSelectedPdf(pdf);
 
-const handleUploadPdf = (file: File) => {
-  const blobUrl = URL.createObjectURL(file);
-  const newPdf = { id: Date.now().toString(), name: file.name, url: blobUrl, file };
-  setPdfs(prev => [...prev, newPdf]);
-  setSelectedPdf(newPdf);
-};
+  const handleUploadPdf = (file: File) => {
+    const blobUrl = URL.createObjectURL(file);
+    const newPdf = { id: Date.now().toString(), name: file.name, url: blobUrl, file };
+    setPdfs(prev => [...prev, newPdf]);
+    setSelectedPdf(newPdf);
+  };
 
   const loadSamples = () => {
     const samples: PDF[] = [
@@ -37,7 +40,12 @@ const handleUploadPdf = (file: File) => {
       onTabChange={setActiveTab}
     >
       {activeTab === 'chat' && <ChatTab selectedPdf={selectedPdf} />}
-      {activeTab === 'quiz' && <Home activeTab="quiz" pdfs={pdfs} selectedPdf={selectedPdf} />}
+      {activeTab === 'quiz' && (
+        <QuizTab
+          selectedPdf={selectedPdf}
+          extractedText={extractedText || ''}
+        />
+      )}
     </MainLayout>
   );
 };
