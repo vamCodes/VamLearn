@@ -23,21 +23,24 @@ const QuizTab: React.FC<QuizTabProps> = ({ selectedPdf, extractedText }) => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const generateQuiz = async () => {
-    if (!extractedText) return alert('No text extracted from PDF.');
-    setLoading(true);
-    setSubmitted(false);
+ const generateQuiz = async () => {
+  if (!extractedText || extractedText.length === 0) return alert('No text extracted.');
+  setLoading(true);
+  setSubmitted(false);
 
-    try {
-      const response = await fakeGPTQuizGenerator(extractedText); // Placeholder
-      setQuizQuestions(response);
-    } catch (err) {
-      console.error(err);
-      alert('Failed to generate quiz.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    // Take only first chunk for now
+    const firstChunk = Array.isArray(extractedText) ? extractedText[0] : extractedText;
+    console.log("🧾 Sending this text chunk to Groq:", firstChunk.slice(0, 4000)); // log preview
+    const response = await fakeGPTQuizGenerator(firstChunk);
+    setQuizQuestions(response);
+  } catch (err) {
+    console.error(err);
+    alert('Failed to generate quiz.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAnswerChange = (id: string, value: string) => {
     setQuizQuestions(prev =>

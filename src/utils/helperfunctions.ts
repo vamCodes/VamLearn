@@ -1,11 +1,20 @@
 import * as pdfjsLib from 'pdfjs-dist';
 
-
-// Ensure PDF.js worker is properly configured
+// Worker setup
 import workerSrc from 'pdfjs-dist/build/pdf.worker.mjs?url';
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
-export const extractPdfText = async (file: File | string): Promise<string> => {
+// Utility: Split into chunks (~3000 words each)
+function chunkText(text: string, maxWords = 3000): string[] {
+  const words = text.split(/\s+/);
+  const chunks = [];
+  for (let i = 0; i < words.length; i += maxWords) {
+    chunks.push(words.slice(i, i + maxWords).join(' '));
+  }
+  return chunks;
+}
+
+export const extractPdfText = async (file: File | string): Promise<string[]> => {
   const loadingTask = pdfjsLib.getDocument(
     typeof file === 'string' ? file : { data: await file.arrayBuffer() }
   );
@@ -19,5 +28,8 @@ export const extractPdfText = async (file: File | string): Promise<string> => {
     fullText += pageText + '\n';
   }
 
-  return fullText.trim();
+  // Split into chunks to avoid token overload
+  const chunks = chunkText(fullText.trim());
+  console.log(`Extracted ${chunks.length} chunks from PDF.`);
+  return chunks;
 };
