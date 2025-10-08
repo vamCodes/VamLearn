@@ -1,6 +1,16 @@
 // Tab types
 export type TabType = 'quiz' | 'chat' | 'progress' | 'pdf-viewer';
+export type QuizQuestionType = "MCQ" | "SAQ" | "LAQ";
 
+export interface QuizQuestion {
+  id: string;                // Unique ID for the question
+  type: QuizQuestionType;    // Question type: MCQ, SAQ, LAQ
+  question: string;          // The question text
+  options?: string[];        // Only for MCQs
+  answer: string;            // Correct answer
+  explanation: string;       // Optional explanation for the answer
+  userAnswer?: string;       // The answer selected/typed by the user
+}
 // PDF Types
 export interface PDF {
   id: string;
@@ -12,6 +22,11 @@ export interface PDF {
   textContent?: PDFTextContent;
   metadata?: PDFMetadata;
 }
+
+
+
+
+
 
 export interface PDFTextContent {
   totalPages: number;

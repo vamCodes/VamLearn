@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import type { PDF } from '../types';
 import Button from '../components/common/Button';
+import {gener}
+
+
 
 interface QuizTabProps {
   selectedPdf: PDF | null;
